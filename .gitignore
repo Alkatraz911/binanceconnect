@@ -1,7 +1,7 @@
-/binancescaner/.env
-/binancescaner/dist
-/binancescaner/node_modules
-/binancescaner/test
+/scaner/.env
+/scaner/dist
+/scaner/node_modules
+/scaner/test
 /node_modules
 .env
 
