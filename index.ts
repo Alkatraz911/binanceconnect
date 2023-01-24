@@ -6,12 +6,12 @@ dotenv.config();
 import { DataSource } from "typeorm";
 import { AggTrade } from "./models.js";
 import { createBot } from "./bot.js";
-import { ReadStream } from "typeorm/platform/PlatformTools.js";
+
 
 const AppDataSource = new DataSource({
   type: "postgres",
   host: "localhost",
-  port: 5432,
+  port: 4001,
   username: "postgres",
   password: "admin",
   database: "binancescaner",
@@ -97,7 +97,7 @@ AppDataSource.initialize()
         );
       }, 60000);
     };
-
+    loader('BTC')
     const token = process.env.BOT_TOKEN ? process.env.BOT_TOKEN : "";
 
     const bot = createBot(token);

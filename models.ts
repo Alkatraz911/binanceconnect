@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class AggTrade {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: "bigint" })
   id: number;
   @Column()
   name: string;
