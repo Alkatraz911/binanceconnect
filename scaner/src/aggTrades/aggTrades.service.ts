@@ -23,45 +23,66 @@ export class AggTradesService {
   }
 
   async getDelta(name: string, tmfr: string) {
-    let availabletmft = ['1H', '4H', '12H', '1D', '1W'];
+    let availabletmft = ['1-H', '4-H', '12-H', '24-H', '168-H'];
 
     if (!availabletmft.includes(tmfr.toLocaleUpperCase())) {
-      return;
-    } else {
+      return {status:400, text: 'bad request'};
+    } else  {
+
       let result = await this.getOne(name);
       let marketBuy = 0;
       let limitBuy = 0;
-      let timecounter = -1;
-      let deltaArr = [];
+      let timecounter = 100;
+      let deltaArr:object[] = [];
 
       const countDelta = (isMarket, quantity) => {
         isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
       };
 
-      const checkTime = (_tmfr, time:number, isMarket, quantity) => {
-
-
-        if (timecounter === -1) {
-          timecounter = new Date(time).getHours();
-          countDelta(isMarket, quantity);
+      result.forEach((el, index) => {
+        let ts = Number(el.timeMachine)
+        if (timecounter === 100) {
+          timecounter = new Date(ts).getHours();
+          countDelta(el.isBuyer, Number(el.quantity));
         } else {
-          if (timecounter === new Date(time).getHours()) {
-            countDelta(isMarket, quantity);
+          if (timecounter === new Date(ts).getHours()) {
+            countDelta(el.isBuyer, Number(el.quantity));
           } else {
             deltaArr.push({
-              label: `${new Date(time).toDateString()} ${timecounter}`,
+              label: `${new Date(Number(result[index-1].timeMachine)).toDateString()} ${new Date(Number(result[index-1].timeMachine)).getHours()}H`,
               delta: marketBuy - limitBuy,
+              hour:  timecounter
             });
             marketBuy = 0;
             limitBuy = 0;
-            timecounter = -1;
+            timecounter = 100;
           }
         }
-      };
-      result.forEach((el) => {
-         checkTime('', Number(el.timeMachine), el.isBuyer, Number(el.quantity))
       });
-      return(deltaArr)
-    }
+      
+      const tmfrChange = (tmfr, arr) => {
+        
+          let newDelta = 0
+          let result:object[] = []
+
+          arr.forEach((el) => {
+            let {label, delta, hour} = el;
+            if(hour % tmfr === 0) {
+              delta = newDelta;
+              result.push({label, delta, hour})
+              newDelta = 0
+            } else {
+              newDelta += delta
+            }
+          });
+          return result
+      }
+      if (tmfr==='1-H') {
+        return deltaArr
+      } else {
+        return tmfrChange(Number(tmfr.split('-')[0]), deltaArr);
+      }
+      
+    } 
   }
 }

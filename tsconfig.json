@@ -22,7 +22,7 @@
         "forceConsistentCasingInFileNames": true,
         "strictPropertyInitialization": false
       },
-    "include": ["*.ts"],
+    "include": [".*.ts", "./models/*.ts"],
     "exclude": ["node_modules"]
 
 }

@@ -19,3 +19,4 @@ export class AggTrade {
   @Column()
   isBest: boolean;
 }
+

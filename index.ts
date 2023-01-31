@@ -4,7 +4,8 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import { DataSource } from "typeorm";
-import { AggTrade } from "./models.js";
+import { AggTrade } from "./models/AggTrades.js";
+import { Delta } from "./models/Delta.js";
 import { createBot } from "./bot.js";
 
 
@@ -15,7 +16,7 @@ const AppDataSource = new DataSource({
   username: "postgres",
   password: "admin",
   database: "binancescaner",
-  entities: [AggTrade],
+  entities: [AggTrade, Delta],
   synchronize: true,
   logging: false,
 });
@@ -31,6 +32,7 @@ interface addTradesresp {
   m: boolean;
   M: boolean;
 }
+
 async function load(coin: string) {
   let url =  `https://data.binance.com/api/v3/aggTrades?symbol=${coin}USDT&limit=400`;
   let result = await fetch(url);
@@ -52,12 +54,46 @@ const checkCoin = async (coin: string) => {
   }
 };
 
-// to initialize initial connection with the database, register all entities
-// and "synchronize" database schema, call "initialize()" method of a newly created database
-// once in your application bootstrap
+
+let marketBuy = 0;
+let limitBuy = 0;
+let timecounter = 100;
+
+
+const countDelta = (isMarket:boolean, quantity:number) => {
+  isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
+};
+
 AppDataSource.initialize()
   .then(() => {
-    
+
+    const getDelta = async (el:addTradesresp, coin: string) => {
+      let ts = Number(el.T)
+        if (timecounter === 100) {
+          timecounter = new Date(ts).getHours();
+          countDelta(el.m, Number(el.q));
+        } else {
+          if (timecounter === new Date(ts).getHours()) {
+            countDelta(el.m, Number(el.q));
+          } else {
+            await AppDataSource.manager
+            .createQueryBuilder()
+            .insert()
+            .into(Delta)
+            .values({
+              coin: coin,
+              date: new Date(el.T).toLocaleDateString(),
+              hour: `${timecounter}H`,
+              delta: marketBuy - limitBuy,
+            })
+            .execute();
+            marketBuy = 0;
+            limitBuy = 0;
+            timecounter = new Date(ts).getHours();
+            countDelta(el.m, Number(el.q));
+          }
+        }
+    }
 
     const loader = (coin: string) => {
       setInterval(() => {
@@ -71,6 +107,7 @@ AppDataSource.initialize()
               if (trade) {
                 return;
               } else {
+                await getDelta(el, coin)
                 await AppDataSource.manager
                   .createQueryBuilder()
                   .insert()
@@ -81,9 +118,7 @@ AppDataSource.initialize()
                     price: el.p,
                     quantity: el.q,
                     timeMachine: el.T,
-                    time: `${new Date(el.T).toLocaleDateString()} ${new Date(
-                      el.T
-                    ).toLocaleTimeString()}`,
+                    time: new Date(el.T).toLocaleString(),
                     isBuyer: el.m,
                     isBest: el.M,
                   })
@@ -97,7 +132,9 @@ AppDataSource.initialize()
         );
       }, 60000);
     };
-    loader('BTC')
+
+
+    
     const token = process.env.BOT_TOKEN ? process.env.BOT_TOKEN : "";
 
     const bot = createBot(token);
