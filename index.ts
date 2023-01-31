@@ -106,6 +106,7 @@ AppDataSource.initialize()
                 .getOne();
               if (trade) {
                 return;
+                
               } else {
                 await getDelta(el, coin)
                 await AppDataSource.manager

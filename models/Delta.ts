@@ -10,6 +10,6 @@ export class Delta {
   date: string;
   @Column()
   hour: string;
-  @Column()
+  @Column({type: "float8"})
   delta: number;
 }
