@@ -68,12 +68,15 @@ AppDataSource.initialize()
   .then(() => {
 
     const getDelta = async (el:addTradesresp, coin: string) => {
+
       let ts = Number(el.T)
+      let hours = new Date(ts).getHours();
+      
         if (timecounter === 100) {
-          timecounter = new Date(ts).getHours();
+          timecounter = hours;
           countDelta(el.m, Number(el.q));
         } else {
-          if (timecounter === new Date(ts).getHours()) {
+          if (timecounter === hours) {
             countDelta(el.m, Number(el.q));
           } else {
             await AppDataSource.manager
@@ -87,9 +90,10 @@ AppDataSource.initialize()
               delta: marketBuy - limitBuy,
             })
             .execute();
+
             marketBuy = 0;
             limitBuy = 0;
-            timecounter = new Date(ts).getHours();
+            timecounter = hours;
             countDelta(el.m, Number(el.q));
           }
         }
@@ -99,33 +103,33 @@ AppDataSource.initialize()
       setInterval(() => {
         load(coin).then(
           async (data: any) => {
-            data.forEach(async (el: addTradesresp) => {
+            for (const el of data) {
               const trade = await AppDataSource.manager
-                .createQueryBuilder(AggTrade, "agg_trade")
-                .where("agg_trade.id = :id", { id: el.a })
-                .getOne();
-              if (trade) {
-                return;
-                
-              } else {
-                await getDelta(el, coin)
-                await AppDataSource.manager
-                  .createQueryBuilder()
-                  .insert()
-                  .into(AggTrade)
-                  .values({
-                    id: el.a,
-                    name: `${coin}-USDT`,
-                    price: el.p,
-                    quantity: el.q,
-                    timeMachine: el.T,
-                    time: new Date(el.T).toLocaleString(),
-                    isBuyer: el.m,
-                    isBest: el.M,
-                  })
-                  .execute();
-              }
-            });
+              .createQueryBuilder(AggTrade, "agg_trade")
+              .where("agg_trade.id = :id", { id: el.a })
+              .getOne();
+            if (trade) {
+              return;
+
+            } else {
+              await getDelta(el, coin)
+              await AppDataSource.manager
+                .createQueryBuilder()
+                .insert()
+                .into(AggTrade)
+                .values({
+                  id: el.a,
+                  name: `${coin}-USDT`,
+                  price: el.p,
+                  quantity: el.q,
+                  timeMachine: el.T,
+                  time: new Date(el.T).toLocaleString(),
+                  isBuyer: el.m,
+                  isBest: el.M,
+                })
+                .execute();
+            }
+            }
           },
           (err) => {
             console.log(err);
@@ -146,6 +150,7 @@ AppDataSource.initialize()
           `Please enter coin ticker you want to track. Example: If you want to track Bitcoin enter BTC`
         );
       });
+
       bot.on("text", async (ctx) => {
         let coin = ctx.message.text.toLocaleUpperCase()
         if (await checkCoin(coin)) {
