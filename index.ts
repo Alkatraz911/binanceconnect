@@ -12,7 +12,7 @@ import { createBot } from "./bot.js";
 const AppDataSource = new DataSource({
   type: "postgres",
   host: "localhost",
-  port: 4001,
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
   username: "postgres",
   password: "admin",
   database: "binancescaner",

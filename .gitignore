@@ -4,5 +4,6 @@
 /scaner/test
 /node_modules
 .env
-
+./scaner/node_modules
+./scaner/dist
 
