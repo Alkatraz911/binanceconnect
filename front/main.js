@@ -6,19 +6,19 @@ const getData = async (url) => {
   return await response.json();
 };
 
-let baseUrl = "http://10.8.0.4:4000/aggTrades/BTC-USDT/"
-const dataArr = getData(baseUrl + '1-H');
+let baseUrl = "http://10.8.0.4:4000/delta/"
+const dataArr = getData(baseUrl + 'BTC');
 
 const render = (data) => {
   data.then((data) => {
     const labels = [];
     data.forEach((element) => {
-      labels.push(Object.values(element)[0]);
+      labels.push(Object.values(element)[3]);
     });
   
     const delta = [];
     data.forEach((element) => {
-      delta.push(Object.values(element)[1]);
+      delta.push(Object.values(element)[4]);
     });
     const dat = {
       labels: labels,
