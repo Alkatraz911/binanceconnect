@@ -14,7 +14,7 @@ export class DeltaService {
   async getOne(name: string) {
     return await this.DeltaRepository
       .createQueryBuilder('delta')
-      .where('delta.name = :name', { name })
+      .where('delta.coin = :name', { name })
       .orderBy('id')
       .getMany();
   }
