@@ -5,5 +5,8 @@ export declare class AggTradesService {
     constructor(aggTradeRepository: Repository<AggTrade>);
     getAll(): Promise<AggTrade[]>;
     getOne(name: string): Promise<AggTrade[]>;
-    getDelta(name: string, tmfr: string): Promise<any[]>;
+    getDelta(name: string, tmfr: string): Promise<object[] | {
+        status: number;
+        text: string;
+    }>;
 }

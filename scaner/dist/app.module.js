@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const aggTrades_module_1 = require("./aggTrades/aggTrades.module");
+const Delta_module_1 = require("./delta/Delta.module");
 const orm_config_1 = require("./config/orm.config");
 let AppModule = class AppModule {
 };
@@ -22,6 +23,7 @@ AppModule = __decorate([
             }),
             typeorm_1.TypeOrmModule.forRoot(orm_config_1.default),
             aggTrades_module_1.AggTradesModule,
+            Delta_module_1.DeltaModule,
         ],
     })
 ], AppModule);

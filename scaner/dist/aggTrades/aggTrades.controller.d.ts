@@ -3,5 +3,8 @@ export declare class AggTradesController {
     private readonly aggTradesService;
     constructor(aggTradesService: AggTradesService);
     getAll(): Promise<import("./model").AggTrade[]>;
-    getDelta(name: string, tmfr: string): Promise<any[]>;
+    getDelta(name: string, tmfr: string): Promise<object[] | {
+        status: number;
+        text: string;
+    }>;
 }
