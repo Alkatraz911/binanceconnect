@@ -86,7 +86,7 @@ AppDataSource.initialize()
             .values({
               coin: coin,
               date: new Date(el.T).toLocaleDateString(),
-              hour: `${timecounter}H`,
+              hour: `${hours}H`,
               delta: marketBuy - limitBuy,
             })
             .execute();
