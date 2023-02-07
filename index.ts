@@ -55,17 +55,21 @@ const checkCoin = async (coin: string) => {
 };
 
 
-let marketBuy = 0;
-let limitBuy = 0;
-let timecounter = 100;
-let date = '';
 
-const countDelta = (isMarket:boolean, quantity:number) => {
-  isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
-};
+
+
 
 AppDataSource.initialize()
   .then(() => {
+
+    let marketBuy = 0;
+    let limitBuy = 0;
+    let timecounter = 100;
+    let date = '';
+
+    const countDelta = (isMarket:boolean, quantity:number) => {
+      isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
+    };
 
     const getDelta = async (el:addTradesresp, coin: string) => {
 
@@ -117,6 +121,7 @@ AppDataSource.initialize()
               return;
 
             } else {
+
               await getDelta(el, coin)
               await AppDataSource.manager
                 .createQueryBuilder()
