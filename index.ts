@@ -58,7 +58,7 @@ const checkCoin = async (coin: string) => {
 let marketBuy = 0;
 let limitBuy = 0;
 let timecounter = 100;
-
+let date = '';
 
 const countDelta = (isMarket:boolean, quantity:number) => {
   isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
@@ -72,9 +72,12 @@ AppDataSource.initialize()
       let ts = Number(el.T)
       let hours = new Date(ts).getHours();
       
+      
         if (timecounter === 100) {
           timecounter = hours;
+          date = new Date(ts).toLocaleString()
           countDelta(el.m, Number(el.q));
+
         } else {
           if (timecounter === hours) {
             countDelta(el.m, Number(el.q));
@@ -85,7 +88,7 @@ AppDataSource.initialize()
             .into(Delta)
             .values({
               coin: coin,
-              date: new Date(el.T).toLocaleDateString(),
+              date: date,
               hour: `${hours}H`,
               delta: marketBuy - limitBuy,
               ts: el.T
@@ -95,6 +98,7 @@ AppDataSource.initialize()
             marketBuy = 0;
             limitBuy = 0;
             timecounter = hours;
+            date = new Date(ts).toLocaleString()
             countDelta(el.m, Number(el.q));
           }
         }
