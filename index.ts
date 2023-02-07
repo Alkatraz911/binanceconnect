@@ -88,6 +88,7 @@ AppDataSource.initialize()
               date: new Date(el.T).toLocaleDateString(),
               hour: `${hours}H`,
               delta: marketBuy - limitBuy,
+              ts: el.T
             })
             .execute();
 

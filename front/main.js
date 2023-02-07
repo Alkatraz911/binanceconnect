@@ -34,12 +34,22 @@ const renderChart = (data, tmfr) => {
 
     data.forEach((element) => {
       if (hours === 1) {
-        labels.push(element.hour)
+        if(element.hour === '0H') {
+          labels.push(element.date+ ' ' + element.hour)
+        } else {
+          labels.push(element.hour)
+        }
+        
       } else {
         if (element.hour.split('').length > 2) {
           Number(element.hour.split('')[0] + element.hour.split('')[1]) % hours === 0 ? labels.push(element.hour) : null;
         } else {
-          Number(element.hour.split('')[0]) % hours === 0 ? labels.push(element.hour) : null;
+          if(element.hour === '0H') {
+            Number(element.hour.split('')[0]) % hours === 0 ? labels.push(element.date+ ' ' + element.hour) : null;
+          } else {
+            Number(element.hour.split('')[0]) % hours === 0 ? labels.push(element.hour) : null;
+          }
+          
         }
       }
 
@@ -52,23 +62,38 @@ const renderChart = (data, tmfr) => {
       } else {
         if (element.hour.split('').length > 2) {
           if (Number(element.hour.split('')[0] + element.hour.split('')[1]) % hours === 0) {
-            let delt = 0
+            let delt = element.delta
+            let previousHour = Number(element.hour.split('')[0] + element.hour.split('')[1])
 
-            for (let i = 1; i <= hours; i++) {
+            for (let i = 1; i < hours; i++) {
               
-              if (index - i > 0) {
+              let hourToCompare = Number(data[hours-i].hour.split('')[0] + data[hours-i].hour.split('')[1])
+              if (previousHour - hourToCompare < hours) {
                 delt += data[index - i].delta
-              } 
+                previousHour = hourToCompare
+              } else {
+                delt += 0
+              }
+
             }
 
             delta.push(delt)
           }
         } else {
           if (Number(element.hour.split('')[0]) % hours === 0) {
-            let delt = 0
-            for (let i = 1; i <= hours; i++) {
-              if (index - i > 0) 
-              delt += data[index - i].delta
+            let delt = element.delta
+            let previousHour = Number(element.hour.split('')[0])
+
+            for (let i = 1; i < hours; i++) {
+              
+              let hourToCompare = Number(data[hours-i].hour.split('')[0])
+              if(previousHour - hourToCompare < hours) {
+                delt += data[index - i].delta
+                previousHour = hourToCompare
+              } else {
+                delt += 0
+              }
+
             }
             delta.push(delt)
           }
