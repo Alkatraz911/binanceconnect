@@ -34,8 +34,9 @@ const renderChart = (data, tmfr) => {
 
     data.forEach((element) => {
       if (hours === 1) {
+        
         if(element.hour === '0H') {
-          labels.push(element.date+ ' ' + element.hour)
+          labels.push(new Date(Number(element.ts)).toLocaleDateString() + ' ' + element.hour)
         } else {
           labels.push(element.hour)
         }
@@ -45,7 +46,7 @@ const renderChart = (data, tmfr) => {
           Number(element.hour.split('')[0] + element.hour.split('')[1]) % hours === 0 ? labels.push(element.hour) : null;
         } else {
           if(element.hour === '0H') {
-            Number(element.hour.split('')[0]) % hours === 0 ? labels.push(element.date+ ' ' + element.hour) : null;
+            Number(element.hour.split('')[0]) % hours === 0 ? labels.push(new Date(Number(element.ts)).toLocaleDateString() + ' ' + element.hour) : null;
           } else {
             Number(element.hour.split('')[0]) % hours === 0 ? labels.push(element.hour) : null;
           }
@@ -63,16 +64,20 @@ const renderChart = (data, tmfr) => {
         if (element.hour.split('').length > 2) {
           if (Number(element.hour.split('')[0] + element.hour.split('')[1]) % hours === 0) {
             let delt = element.delta
-            let previousHour = Number(element.hour.split('')[0] + element.hour.split('')[1])
+            let lastElementTime = Number(element.hour.split('')[0] + element.hour.split('')[1])
 
             for (let i = 1; i < hours; i++) {
-              
-              let hourToCompare = Number(data[hours-i].hour.split('')[0] + data[hours-i].hour.split('')[1])
-              if (previousHour - hourToCompare < hours) {
-                delt += data[index - i].delta
-                previousHour = hourToCompare
+              let element = data[index-i]
+              if (element) {
+                let timeToCompare = Number(element.hour.split('')[0] + element.hour.split('')[1])
+                if (lastElementTime - timeToCompare <= hours) {
+                  delt += data[index - i].delta
+                  lastElementTime = timeToCompare
+                } else {
+                  delt += 0
+                }
               } else {
-                delt += 0
+                delt = data[index].delta
               }
 
             }
@@ -82,17 +87,23 @@ const renderChart = (data, tmfr) => {
         } else {
           if (Number(element.hour.split('')[0]) % hours === 0) {
             let delt = element.delta
-            let previousHour = Number(element.hour.split('')[0])
+            let lastElementTime = Number(element.hour.split('')[0])
 
             for (let i = 1; i < hours; i++) {
               
-              let hourToCompare = Number(data[hours-i].hour.split('')[0])
-              if(previousHour - hourToCompare < hours) {
-                delt += data[index - i].delta
-                previousHour = hourToCompare
+              let element = data[index-i]
+              if(element) {
+                let timeToCompare = Number(element.hour.split('')[0])
+                if (lastElementTime - timeToCompare <= hours) {
+                  delt += data[index - i].delta
+                  lastElementTime = timeToCompare
+                } else {
+                  delt += 0
+                }
               } else {
-                delt += 0
+                delt = data[index].delta
               }
+
 
             }
             delta.push(delt)

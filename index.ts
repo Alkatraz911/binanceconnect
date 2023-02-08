@@ -79,7 +79,7 @@ AppDataSource.initialize()
       
         if (timecounter === 100) {
           timecounter = hours;
-          date = new Date(ts).toLocaleString()
+          date = new Date(ts).toLocaleDateString()
           countDelta(el.m, Number(el.q));
 
         } else {
@@ -102,7 +102,7 @@ AppDataSource.initialize()
             marketBuy = 0;
             limitBuy = 0;
             timecounter = hours;
-            date = new Date(ts).toLocaleString()
+            date = new Date(ts).toLocaleDateString()
             countDelta(el.m, Number(el.q));
           }
         }
