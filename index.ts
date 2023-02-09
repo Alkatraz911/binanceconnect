@@ -170,10 +170,10 @@ AppDataSource.initialize()
           await ctx.reply(`Enter right coin please`);
         }
       });
-
+      
       bot.launch();
     }
-
+    loader('BTC')
     // here you can start to work with your database
   })
   .catch((error) => console.log(error));
