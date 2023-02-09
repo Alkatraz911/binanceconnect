@@ -92,8 +92,6 @@ AppDataSource.initialize()
             .into(Delta)
             .values({
               coin: coin,
-              date: date,
-              hour: `${hours}H`,
               delta: marketBuy - limitBuy,
               ts: el.T
             })
