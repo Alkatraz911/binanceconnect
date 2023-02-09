@@ -6,10 +6,6 @@ export class Delta {
   id: number;
   @Column()
   coin: string;
-  @Column()
-  date: string;
-  @Column()
-  hour: string;
   @Column({type: "float8"})
   delta: number;
   @Column({type: "float8"})
