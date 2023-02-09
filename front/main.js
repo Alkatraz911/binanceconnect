@@ -33,82 +33,54 @@ const renderChart = (data, tmfr) => {
     const labels = [];
 
     data.forEach((element) => {
+      let date = new Date(Number(element.ts)).toLocaleDateString()
+      let elementHour = new Date(Number(element.ts)).getHours()
       if (hours === 1) {
         
-        if(element.hour === '0H') {
-          labels.push(new Date(Number(element.ts)).toLocaleDateString() + ' ' + element.hour)
+        if(elementHour === 0) {
+          labels.push(date + ' ' + elementHour)
         } else {
-          labels.push(element.hour)
+          labels.push(elementHour)
         }
         
       } else {
-        if (element.hour.split('').length > 2) {
-          Number(element.hour.split('')[0] + element.hour.split('')[1]) % hours === 0 ? labels.push(element.hour) : null;
-        } else {
+
           if(element.hour === '0H') {
-            Number(element.hour.split('')[0]) % hours === 0 ? labels.push(new Date(Number(element.ts)).toLocaleDateString() + ' ' + element.hour) : null;
+            elementHour % hours === 0 ? labels.push(date + ' ' + elementHour) : null;
+            
           } else {
-            Number(element.hour.split('')[0]) % hours === 0 ? labels.push(element.hour) : null;
+            elementHour % hours === 0 ? labels.push(elementHour) : null;
           }
           
         }
-      }
-
     });
 
     const delta = [];
     data.forEach((element, index) => {
+      let elementHour = new Date(Number(element.ts)).getHours()
       if (hours === 1) {
         delta.push(element.delta);
       } else {
-        if (element.hour.split('').length > 2) {
-          if (Number(element.hour.split('')[0] + element.hour.split('')[1]) % hours === 0) {
+
+          if (elementHour % hours === 0) {
             let delt = element.delta
-            let lastElementTime = Number(element.hour.split('')[0] + element.hour.split('')[1])
+            
 
             for (let i = 1; i < hours; i++) {
-              let element = data[index-i]
-              if (element) {
-                let timeToCompare = Number(element.hour.split('')[0] + element.hour.split('')[1])
-                if (lastElementTime - timeToCompare <= hours) {
-                  delt += data[index - i].delta
-                  lastElementTime = timeToCompare
+              let el = data[index-i]
+              if (el) {
+                let timeToCompare = new Date(Number(el.ts)).getHours()
+                if (elementHour - timeToCompare <= hours) {
+                  delt += data[index - i].delta           
                 } else {
                   delt += 0
                 }
               } else {
                 delt = data[index].delta
               }
-
-            }
-
-            delta.push(delt)
-          }
-        } else {
-          if (Number(element.hour.split('')[0]) % hours === 0) {
-            let delt = element.delta
-            let lastElementTime = Number(element.hour.split('')[0])
-
-            for (let i = 1; i < hours; i++) {
-              
-              let element = data[index-i]
-              if(element) {
-                let timeToCompare = Number(element.hour.split('')[0])
-                if (lastElementTime - timeToCompare <= hours) {
-                  delt += data[index - i].delta
-                  lastElementTime = timeToCompare
-                } else {
-                  delt += 0
-                }
-              } else {
-                delt = data[index].delta
-              }
-
-
             }
             delta.push(delt)
           }
-        }
       }
     });
 
