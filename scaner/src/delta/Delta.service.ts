@@ -12,14 +12,17 @@ export class DeltaService {
 
 
   async getOne(name: string, tmfr: string) {
+
     let rows = await this.DeltaRepository
     .countBy({coin: name })
+    
     if(tmfr === '1-H') {
-      if(rows - 60) {
+
+      if(rows - 60 > 0) {
         return await this.DeltaRepository
         .createQueryBuilder('delta')
         .where('delta.coin = :name', { name })
-        .orderBy('id').skip(rows-60)
+        .orderBy('id').skip(rows - 60)
         .getMany();
       } else {
         return await this.DeltaRepository
@@ -31,7 +34,7 @@ export class DeltaService {
 
     } else {
       let multiply = Number(tmfr.split('-')[0])
-      if(rows - 60 * multiply) {
+      if (rows - 60 * multiply > 0) {
         return await this.DeltaRepository
         .createQueryBuilder('delta')
         .where('delta.coin = :name', { name })
