@@ -14,16 +14,18 @@ export class DeltaService {
   async getOne(name: string, tmfr: string) {
     if(tmfr === '1-H') {
       return await this.DeltaRepository
-      .createQueryBuilder('delta').take(60)
+      .createQueryBuilder('delta')
       .where('delta.coin = :name', { name })
-      .orderBy('id')
+      .orderBy('id', "DESC").limit(60)
+      .orderBy('id', "ASC")
       .getMany();
     } else {
       let multiply = Number(tmfr.split('-')[0])
       return await this.DeltaRepository
-      .createQueryBuilder('delta').take(60 * multiply)
+      .createQueryBuilder('delta')
       .where('delta.coin = :name', { name })
-      .orderBy('id')
+      .orderBy('id', "DESC").limit(60 * multiply)
+      .orderBy('id', "ASC")
       .getMany();
     }
 
