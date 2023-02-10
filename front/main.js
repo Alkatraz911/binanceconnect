@@ -6,22 +6,9 @@ const getData = async (url) => {
   return await response.json();
 };
 
-const countDelta = (el, tmfr) => {
-
-
-
-}
-
-const changeTmfr = (el, tmfr) => {
-  if (el.hour.split('').length > 2) {
-    Number(el.hour.split('')[0] + el.hour.split('')[1]) % tmfr === 0 ? el.hour : null;
-  } else {
-    Number(el.hour.split('')[0]) % tmfr === 0 ? el.hour : null;
-  }
-
-}
 
 let baseUrl = "http://10.8.0.4:4000/delta/"
+
 const dataArr = getData(baseUrl + 'BTC');
 
 const renderChart = (data, tmfr) => {
@@ -45,7 +32,7 @@ const renderChart = (data, tmfr) => {
         
       } else {
 
-          if(element.hour === '0H') {
+          if(elementHour === 0) {
             elementHour % hours === 0 ? labels.push(date + ' ' + elementHour) : null;
             
           } else {
@@ -96,7 +83,7 @@ const renderChart = (data, tmfr) => {
         },
       ],
     };
-    
+    console.log(dat)
 
 
     const config = {
