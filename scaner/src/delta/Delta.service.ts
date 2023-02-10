@@ -16,16 +16,16 @@ export class DeltaService {
       return await this.DeltaRepository
       .createQueryBuilder('delta')
       .where('delta.coin = :name', { name })
-      .orderBy('id', "DESC").limit(60)
-      .orderBy('id', "ASC")
+      .orderBy('ts', "DESC").limit(60)
+      .orderBy('ts', "ASC")
       .getMany();
     } else {
       let multiply = Number(tmfr.split('-')[0])
       return await this.DeltaRepository
       .createQueryBuilder('delta')
       .where('delta.coin = :name', { name })
-      .orderBy('id', "DESC").limit(60 * multiply)
-      .orderBy('id', "ASC")
+      .orderBy('ts', "DESC").limit(60 * multiply)
+      .orderBy('ts', "ASC")
       .getMany();
     }
 
