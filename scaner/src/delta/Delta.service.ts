@@ -11,12 +11,22 @@ export class DeltaService {
   ) {}
 
 
-  async getOne(name: string) {
-    return await this.DeltaRepository
-      .createQueryBuilder('delta')
+  async getOne(name: string, tmfr: string) {
+    if(tmfr === '1-H') {
+      return await this.DeltaRepository
+      .createQueryBuilder('delta').limit(72)
       .where('delta.coin = :name', { name })
       .orderBy('id')
       .getMany();
+    } else {
+      let multiply = Number(tmfr.split('-')[0])
+      return await this.DeltaRepository
+      .createQueryBuilder('delta').limit(72*multiply)
+      .where('delta.coin = :name', { name })
+      .orderBy('id')
+      .getMany();
+    }
+
   }
 
 }

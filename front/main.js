@@ -9,10 +9,11 @@ const getData = async (url) => {
 
 let baseUrl = "http://10.8.0.4:4000/delta/"
 
-const dataArr = getData(baseUrl + 'BTC');
 
-const renderChart = (data, tmfr) => {
 
+const renderChart = (tmfr) => {
+
+  const data = getData(`${baseUrl}BTC/${tmfr}`);
   let hours = Number(tmfr.split('-')[0])
 
   data.then((data) => {
@@ -83,8 +84,6 @@ const renderChart = (data, tmfr) => {
         },
       ],
     };
-    console.log(dat)
-
 
     const config = {
       type: "bar",
@@ -100,11 +99,11 @@ const renderChart = (data, tmfr) => {
 }
 
 
-renderChart(dataArr, '1-H')
+renderChart('1-H')
 
 document.querySelector('.button-container').addEventListener('click', (e) => {
   chart.destroy()
-  chart = renderChart(getData(baseUrl + 'BTC'), e.target.textContent)
+  chart = renderChart(e.target.textContent)
 })
 
 
