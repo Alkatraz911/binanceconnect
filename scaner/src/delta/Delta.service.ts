@@ -12,20 +12,20 @@ export class DeltaService {
 
 
   async getOne(name: string, tmfr: string) {
+    let rows = await this.DeltaRepository
+    .countBy({coin: name })
     if(tmfr === '1-H') {
       return await this.DeltaRepository
       .createQueryBuilder('delta')
       .where('delta.coin = :name', { name })
-      .orderBy('ts', "DESC").limit(60)
-      .orderBy('ts', "ASC")
+      .orderBy('id').skip(rows-60)
       .getMany();
     } else {
       let multiply = Number(tmfr.split('-')[0])
       return await this.DeltaRepository
       .createQueryBuilder('delta')
       .where('delta.coin = :name', { name })
-      .orderBy('ts', "DESC").limit(60 * multiply)
-      .orderBy('ts', "ASC")
+      .orderBy('id').skip(rows - 60 * multiply)
       .getMany();
     }
 
