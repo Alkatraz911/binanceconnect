@@ -27,7 +27,7 @@ async function bootstrap() {
   }
 
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  app.enableCors({origin: true});
 
   await app.listen(process.env.PORT, '0.0.0.0', () => {
     console.log(`App is running at ${process.env.PORT} port. App mode ${mode}`);

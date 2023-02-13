@@ -1,13 +1,8 @@
-/scaner/.env
-/scaner/dist
-/scaner/node_modules
-/scaner/test
-/node_modules
+node_modules
 .env
-./scaner/node_modules
-./scaner/dist
 scaner/dist
 scaner/node_modules
 scaner/.env
 scaner/test
-
+front/node_modules
+front/dist

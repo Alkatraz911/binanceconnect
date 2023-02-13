@@ -1,3 +1,5 @@
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
 const ctx = document.querySelector("#myChart");
 let chart = null;
 
@@ -7,7 +9,7 @@ const getData = async (url) => {
 };
 
 
-let baseUrl = "http://10.8.0.4:4000/delta/"
+let baseUrl = "https://10.8.0.4:4004/delta/"
 
 
 
