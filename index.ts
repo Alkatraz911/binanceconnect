@@ -58,7 +58,7 @@ const checkCoin = async (coin: string) => {
   let result = await AppDataSource.manager
   .createQueryBuilder()
   .select()
-  .from(Delta, "coin")
+  .from(Delta, "delta")
   .where('delta.coin = :coin', { coin })
   .getOne();
   if (result) {
