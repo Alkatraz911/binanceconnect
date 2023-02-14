@@ -145,7 +145,7 @@ AppDataSource.initialize()
           }
         );
       }, 60000);
-      trackingCoins.push[coin]
+      trackingCoins.push(coin)
     };
 
 
