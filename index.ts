@@ -54,19 +54,7 @@ const checkApi = async (coin: string) => {
   }
 };
 
-const checkCoin = async (coin: string) => {
-  let result = await AppDataSource.manager
-  .createQueryBuilder()
-  .select()
-  .from(Delta, "delta")
-  .where('delta.coin = :coin', { coin })
-  .getOne();
-  if (result) {
-    return true;
-  } else {
-    return false;
-  }
-};
+
 
 
 
@@ -78,6 +66,7 @@ AppDataSource.initialize()
     let limitBuy = 0;
     let timecounter = 100;
     let date = '';
+    let trackingCoins = []
 
     const countDelta = (isMarket:boolean, quantity:number) => {
       isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
@@ -156,6 +145,7 @@ AppDataSource.initialize()
           }
         );
       }, 60000);
+      trackingCoins.push[coin]
     };
 
 
@@ -173,7 +163,7 @@ AppDataSource.initialize()
 
       bot.on("text", async (ctx) => {
         let coin = ctx.message.text.toLocaleUpperCase()
-        if (await checkApi(coin) && !checkCoin(coin)) {
+        if (await checkApi(coin) && !trackingCoins.includes(coin)) {
           loader(coin);
           await ctx.reply(`Now ${coin} is tracking`);
         } else if(!checkApi(coin)) {
