@@ -66,7 +66,7 @@ AppDataSource.initialize()
     let limitBuy = 0;
     let timecounter = 100;
     let date = '';
-    let trackingCoins = []
+    let trackingCoins:string[] = []
 
     const countDelta = (isMarket:boolean, quantity:number) => {
       isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
