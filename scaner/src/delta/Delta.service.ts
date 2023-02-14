@@ -12,7 +12,7 @@ export class DeltaService {
 
 
   async getOne(name: string, tmfr: string) {
-
+    
     let rows = await this.DeltaRepository
     .countBy({coin: name })
     

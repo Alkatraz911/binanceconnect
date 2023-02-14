@@ -44,7 +44,7 @@ async function load(coin: string) {
   }
 }
 
-const checkCoin = async (coin: string) => {
+const checkApi = async (coin: string) => {
   let url = `https://data.binance.com/api/v3/aggTrades?symbol=${coin}USDT&limit=400`;
   let response = await fetch(url);
   if (response.ok) {
@@ -54,7 +54,19 @@ const checkCoin = async (coin: string) => {
   }
 };
 
-
+const checkCoin = async (coin: string) => {
+  let result = await AppDataSource.manager
+  .createQueryBuilder()
+  .select()
+  .from(Delta, "*")
+  .where('delta.coin = :coin', { coin })
+  .getOne();
+  if (result) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 
 
@@ -161,11 +173,13 @@ AppDataSource.initialize()
 
       bot.on("text", async (ctx) => {
         let coin = ctx.message.text.toLocaleUpperCase()
-        if (await checkCoin(coin)) {
+        if (await checkApi(coin) && !checkCoin(coin)) {
           loader(coin);
           await ctx.reply(`Now ${coin} is tracking`);
-        } else {
+        } else if(!checkApi(coin)) {
           await ctx.reply(`Enter right coin please`);
+        } else {
+          await ctx.reply(`Coin is tracked already`);
         }
       });
       
