@@ -105,7 +105,7 @@ const renderChart = (tmfr) => {
         backgroundColor: background
       }
     };
-    
+
     chart = new Chart(ctx, config);
   });
 }
@@ -119,3 +119,6 @@ document.querySelector('.button-container').addEventListener('click', (e) => {
 })
 
 
+window.addEventListener("DOMContentLoaded", async () => {
+  const availableCoins = await fetch
+})

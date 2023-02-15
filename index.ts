@@ -1,3 +1,4 @@
+
 import fetch from "node-fetch";
 import "reflect-metadata";
 import * as dotenv from "dotenv";
@@ -6,6 +7,7 @@ dotenv.config();
 import { DataSource } from "typeorm";
 import { AggTrade } from "./models/AggTrades.js";
 import { Delta } from "./models/Delta.js";
+import { TrackingCoins } from "./models/TrackingCoins.js"
 import { createBot } from "./bot.js";
 
 
@@ -16,7 +18,7 @@ const AppDataSource = new DataSource({
   username: "postgres",
   password: "admin",
   database: "binancescaner",
-  entities: [AggTrade, Delta],
+  entities: [AggTrade, Delta, TrackingCoins],
   synchronize: true,
   logging: false,
 });
@@ -54,19 +56,47 @@ const checkApi = async (coin: string) => {
   }
 };
 
+const trackCoin = async (datasourse: DataSource, coin: string) => {
+  await datasourse.manager
+  .createQueryBuilder()
+  .insert()
+  .into(TrackingCoins)
+  .values({coin: coin})
+  .execute()
+}
 
+const readTrackingCoins = async (datasourse: DataSource) => {
+  return await datasourse.manager
+  .createQueryBuilder()
+  .select("tracking_coins.coin")
+  .from(TrackingCoins, "tracking_coins")
+  .getMany()
+}
+
+const checkTrackingCoins = async (datasourse : DataSource, coin :string) => {
+  let result = await datasourse.manager
+  .createQueryBuilder()
+  .select("tracking_coins.coin")
+  .from(TrackingCoins, "tracking_coins")
+  .where("tracking_coins.coin = :coin", {coin: coin})
+  .getOne()
+  if(result) {
+    return true
+  } else {
+    return false
+  }
+}
 
 
 
 
 AppDataSource.initialize()
-  .then(() => {
+  .then(async () => {
 
     let marketBuy = 0;
     let limitBuy = 0;
     let timecounter = 100;
     let date = '';
-    let trackingCoins:string[] = []
 
     const countDelta = (isMarket:boolean, quantity:number) => {
       isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
@@ -145,7 +175,9 @@ AppDataSource.initialize()
           }
         );
       }, 60000);
-      trackingCoins.push(coin)
+      
+      
+      
     };
 
 
@@ -163,10 +195,11 @@ AppDataSource.initialize()
 
       bot.on("text", async (ctx) => {
         let coin = ctx.message.text.toLocaleUpperCase()
-        if (await checkApi(coin) && !trackingCoins.includes(coin)) {
+        if (await checkApi(coin) && ! await checkTrackingCoins(AppDataSource, coin)) {
           loader(coin);
+          trackCoin(AppDataSource, coin);
           await ctx.reply(`Now ${coin} is tracking`);
-        } else if(!checkApi(coin)) {
+        } else if(! await checkApi(coin)) {
           await ctx.reply(`Enter right coin please`);
         } else {
           await ctx.reply(`Coin is tracked already`);
@@ -175,7 +208,12 @@ AppDataSource.initialize()
       
       bot.launch();
     }
-    loader('BTC')
+
+    const coins = await readTrackingCoins(AppDataSource)
+    coins.forEach(el=>{
+      loader(el.coin)
+    })
+ 
     // here you can start to work with your database
   })
   .catch((error) => console.log(error));
