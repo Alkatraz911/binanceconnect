@@ -1,4 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ctx = document.querySelector("#myChart");
 let chart = null;
@@ -46,16 +46,26 @@ const renderChart = (tmfr) => {
     });
 
     const delta = [];
+    const background = [];
+
+    const checkColor = (el) => {
+      if( el > 0) {
+        return 'green'
+      } else {
+        return 'red'
+      }
+    }
+
     data.forEach((element, index) => {
       let elementHour = new Date(Number(element.ts)).getHours()
       if (hours === 1) {
         delta.push(element.delta);
+        background.push(checkColor(element.delta))
       } else {
 
           if (elementHour % hours === 0) {
             let delt = element.delta
             
-
             for (let i = 1; i < hours; i++) {
               let el = data[index-i]
               if (el) {
@@ -70,6 +80,7 @@ const renderChart = (tmfr) => {
               }
             }
             delta.push(delt)
+            background.push(checkColor(delt))
           }
       }
     });
@@ -91,12 +102,11 @@ const renderChart = (tmfr) => {
       type: "bar",
       data: dat,
       options: {
-        backgroundColor: 'rgb(238, 75, 43)'
+        backgroundColor: background
       }
     };
-
+    
     chart = new Chart(ctx, config);
-
   });
 }
 
