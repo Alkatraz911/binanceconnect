@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import "reflect-metadata";
 import * as dotenv from "dotenv";
 dotenv.config();
+import fs from 'fs'
 
 import { DataSource } from "typeorm";
 import { AggTrade } from "./models/AggTrades.js";
@@ -98,8 +99,8 @@ AppDataSource.initialize()
     let timecounter = 100;
     let date = '';
 
-    const countDelta = (isMarket:boolean, quantity:number) => {
-      isMarket ? (marketBuy += quantity) : (limitBuy += quantity);
+    const countDelta = (isMarket:boolean, quantity:number, price) => {
+      isMarket ? (marketBuy += quantity * price) : (limitBuy += quantity * price);
     };
 
     const getDelta = async (el:addTradesresp, coin: string) => {
@@ -111,11 +112,11 @@ AppDataSource.initialize()
         if (timecounter === 100) {
           timecounter = hours;
           date = new Date(ts).toLocaleDateString()
-          countDelta(el.m, Number(el.q));
+          countDelta(el.m, Number(el.q), Number(el.p));
 
         } else {
           if (timecounter === hours) {
-            countDelta(el.m, Number(el.q));
+            countDelta(el.m, Number(el.q), Number(el.p));
           } else {
             await AppDataSource.manager
             .createQueryBuilder()
@@ -132,7 +133,7 @@ AppDataSource.initialize()
             limitBuy = 0;
             timecounter = hours;
             date = new Date(ts).toLocaleDateString()
-            countDelta(el.m, Number(el.q));
+            countDelta(el.m, Number(el.q), Number(el.p));
           }
         }
     }
@@ -142,35 +143,37 @@ AppDataSource.initialize()
         load(coin).then(
           async (data: any) => {
             for (const el of data) {
-              const trade = await AppDataSource.manager
-              .createQueryBuilder(AggTrade, "agg_trade")
-              .where("agg_trade.id = :id", { id: el.a })
-              .getOne();
-            if (trade) {
-              return;
+            //   const trade = await AppDataSource.manager
+            //   .createQueryBuilder(AggTrade, "agg_trade")
+            //   .where("agg_trade.id = :id", { id: el.a })
+            //   .getOne();
+            // if (trade) {
+            //   return;
 
-            } else {
+            // } else {
 
-              await getDelta(el, coin)
-              await AppDataSource.manager
-                .createQueryBuilder()
-                .insert()
-                .into(AggTrade)
-                .values({
-                  id: el.a,
-                  name: `${coin}-USDT`,
-                  price: el.p,
-                  quantity: el.q,
-                  timeMachine: el.T,
-                  time: new Date(el.T).toLocaleString(),
-                  isBuyer: el.m,
-                  isBest: el.M,
-                })
-                .execute();
-            }
+              
+            //   await AppDataSource.manager
+            //     .createQueryBuilder()
+            //     .insert()
+            //     .into(AggTrade)
+            //     .values({
+            //       id: el.a,
+            //       name: `${coin}-USDT`,
+            //       price: el.p,
+            //       quantity: el.q,
+            //       timeMachine: el.T,
+            //       time: new Date(el.T).toLocaleString(),
+            //       isBuyer: el.m,
+            //       isBest: el.M,
+            //     })
+            //     .execute();
+            // }
+            await getDelta(el, coin);
             }
           },
           (err) => {
+            fs.writeFileSync("log.txt", new Date().toLocaleDateString() + ' ' + err.message);
             console.log(err);
           }
         );
