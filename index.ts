@@ -99,7 +99,7 @@ AppDataSource.initialize()
     let timecounter = 100;
     let date = '';
 
-    const countDelta = (isMarket:boolean, quantity:number, price) => {
+    const countDelta = (isMarket:boolean, quantity:number, price:number) => {
       isMarket ? (marketBuy += quantity * price) : (limitBuy += quantity * price);
     };
 
