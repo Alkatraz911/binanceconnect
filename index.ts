@@ -94,13 +94,13 @@ const checkTrackingCoins = async (datasourse : DataSource, coin :string) => {
 AppDataSource.initialize()
   .then(async () => {
 
-    let marketBuy = 0;
-    let limitBuy = 0;
+    let maker = 0;
+    let taker = 0;
     let timecounter = 100;
     let date = '';
 
-    const countDelta = (isMarket:boolean, quantity:number, price:number) => {
-      isMarket ? (marketBuy += quantity * price) : (limitBuy += quantity * price);
+    const countDelta = (isMaker:boolean, quantity:number, price:number) => {
+      isMaker ? (maker += quantity * price) : (taker += quantity * price);
     };
 
     const getDelta = async (el:addTradesresp, coin: string) => {
