@@ -34,8 +34,14 @@ interface addTradesresp {
   M: boolean;
 }
 
-async function load(coin: string) {
-  let url = `https://data.binance.com/api/v3/aggTrades?symbol=${coin}USDT&limit=400`;
+async function load(coin: string, fromId?: number) {
+  let url: string;
+  if(fromId) {
+      url = `https://data.binance.com/api/v3/aggTrades?symbol=${coin}USDT&fromId=${fromId}&limit=500`;
+  } else {
+    url = `https://data.binance.com/api/v3/aggTrades?symbol=${coin}USDT&limit=500`;
+  }
+  
   let result = await fetch(url);
   if (result.ok) {
     let response = await result.json();
@@ -91,7 +97,6 @@ AppDataSource.initialize()
     let purchases = 0;
     let sells = 0;
     let timecounter = 100;
-    let date = ''
     
 
     const countDelta = (
@@ -112,7 +117,7 @@ AppDataSource.initialize()
 
       if (timecounter === 100) {
         timecounter = hours;
-        date = new Date(ts).toLocaleDateString();
+        
         countDelta(el.m, Number(el.q), Number(el.p));
       } else {
         if (timecounter === hours) {
@@ -132,15 +137,16 @@ AppDataSource.initialize()
           purchases = 0;
           sells = 0;
           timecounter = hours;
-          date = new Date(ts).toLocaleDateString();
+
           countDelta(el.m, Number(el.q), Number(el.p));
         }
       }
     };
 
     const loader = (coin: string) => {
+      let fromId :undefined | number;
       setInterval(() => {
-        load(coin).then(
+        load(coin, fromId).then(
           async (data: any) => {
             for (const el of data) {
               //   const trade = await AppDataSource.manager
@@ -168,6 +174,7 @@ AppDataSource.initialize()
               //     })
               //     .execute();
               // }
+              fromId = el.a
               await getDelta(el, coin);
             }
           },
@@ -179,7 +186,7 @@ AppDataSource.initialize()
             console.log(err);
           }
         );
-      }, 60000);
+      }, 15000);
     };
 
     const token = process.env.BOT_TOKEN ? process.env.BOT_TOKEN : "";
